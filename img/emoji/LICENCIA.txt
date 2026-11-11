@@ -1,0 +1,5 @@
+Imágenes de emojis de esta carpeta:
+- 50 imágenes (128x128 px, PNG con transparencia) fueron aportadas por la dueña de la invitación,
+  con apariencia estilo Apple/iOS. Los derechos de uso de esas imágenes son responsabilidad de quien las aporta.
+- 1f615.png (cara confundida, solo aparece en un mensaje de error del panel) sigue siendo Noto Color Emoji
+  © Google LLC, licencia Apache 2.0 (https://github.com/googlefonts/noto-emoji), hasta que se reemplace.

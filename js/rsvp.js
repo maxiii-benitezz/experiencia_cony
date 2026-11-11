@@ -1,9 +1,24 @@
 /* =====================================================
    RSVP.JS – Confirmación de asistencia, el juego del
-   "¿estás seguro/a?" y la carta de Cony
+   "No puedo" y la carta de Cony
    ===================================================== */
 
-var vuelta = 0;   /* cuántas veces dijo "No puedo" (0 a 3) */
+/* -----------------------------------------------------------------
+   CÓMO FUNCIONA:
+   - "¡Voy!" confirma directo y muestra la carta (el sobre se abre al tocarlo).
+   - "No puedo" arranca el juego: aparece un cuadro con los pasos de PREGUNTAS_SEGURO
+     (config.js). En cada paso el botón "Mejor sí voy" crece y el de "No puedo" se achica.
+     En el último paso hay que escribir el motivo y enviar.
+   - terminar() manda la respuesta (Va / No va + motivo) al Google Form (js/google.js);
+     Cony la ve como una fila nueva en su hoja de Google Sheets.
+   [EDITABLE]
+     - Los textos de cada paso: config.js (PREGUNTAS_SEGURO). La carta: config.js (CARTA).
+     - Cuánto crece / se achica cada botón: los números 0.15 y 0.2 en mostrarSeguro().
+     - El mensaje que ve quien dice que no va: dentro de terminar().
+   ----------------------------------------------------------------- */
+
+
+var vuelta = 0;   /* en qué paso del "No puedo" está (0 = todavía no tocó, 1, 2...) */
 
 /* Deja la confirmación como nueva (se usa cuando otra persona elige su perfil) */
 function reiniciarConfirmacion(){
@@ -11,15 +26,19 @@ function reiniciarConfirmacion(){
   $("#form").hidden = false;
   $("#done").hidden = true;
   $("#ask").hidden = true;
-  $("#msg").value = "";
+  $("#why").value = "";
 }
 
-/* Muestra el cuadro de "¿estás seguro/a?" según la vuelta */
+/* Muestra el cuadro del juego según el paso (vuelta) */
 function mostrarSeguro(){
-  var texto = PREGUNTAS_SEGURO[vuelta - 1];
-  $("#at").textContent = texto[0];
-  $("#ap").textContent = texto[1];
-  /* "Mejor sí voy" crece y "No puedo" se achica en cada vuelta (cambiá 0.15 y 0.2 si querés) */
+  var paso = PREGUNTAS_SEGURO[vuelta - 1];     /* [título, texto, ¿pide motivo?] */
+  var esUltimo = (vuelta === PREGUNTAS_SEGURO.length);
+  $("#at").textContent = paso[0];
+  $("#ap").textContent = paso[1];
+  $("#why").hidden = !paso[2];                 /* cuadro del motivo solo si el paso lo pide */
+  $("#whyErr").textContent = "";
+  $("#an").textContent = esUltimo ? "Enviar: no voy" : "No puedo";
+  /* "Mejor sí voy" crece y el otro botón se achica en cada paso (cambiá 0.15 y 0.2 si querés) */
   $("#ay").style.transform = "scale(" + (1 + 0.15 * vuelta) + ")";
   $("#an").style.transform = "scale(" + (1 - 0.2 * vuelta) + ")";
   $("#ask").hidden = false;
@@ -35,16 +54,19 @@ $("#no").onclick = function(){ vuelta = 1; mostrarSeguro(); };
 /* "Mejor sí voy" (dentro del cuadro) -> confirma que va */
 $("#ay").onclick = function(){ $("#ask").hidden = true; terminar("yes"); };
 
-/* "No puedo" (dentro del cuadro) -> pregunta de nuevo, y la 3ra vez es de verdad */
+/* "No puedo" (dentro del cuadro) -> siguiente paso; en el último se envía el motivo */
 $("#an").onclick = function(){
-  if (vuelta < PREGUNTAS_SEGURO.length){ vuelta++; mostrarSeguro(); }
-  else { $("#ask").hidden = true; terminar("no"); }
+  if (vuelta < PREGUNTAS_SEGURO.length){ vuelta++; mostrarSeguro(); return; }
+  /* Último paso: el motivo es obligatorio */
+  var motivo = $("#why").value.trim();
+  if (!motivo){ $("#whyErr").textContent = "Escribile a Cony el motivo 💬"; $("#why").focus(); return; }
+  $("#ask").hidden = true;
+  terminar("no", motivo);
 };
 
 /* Cierra el formulario, muestra el resultado y guarda la respuesta.
-   respuesta = "yes" (va) o "no" (no va) */
-function terminar(respuesta){
-  var mensaje = $("#msg").value.trim();
+   respuesta = "yes" (va) o "no" (no va) · motivo = texto (solo si no va) */
+function terminar(respuesta, motivo){
   $("#form").hidden = true;
   $("#done").hidden = false;
   var aviso = '<p class="note" id="sv"></p>';   /* lugar para avisar si falló el guardado */
@@ -62,14 +84,11 @@ function terminar(respuesta){
     };
   } else {
     $("#done").innerHTML =
-      '<p class="big">💔</p><h2>Te voy a extrañar…</h2>' +
-      '<p class="sub">Gracias por avisar, ' + esc(quien) + '. ¡Te quiero igual! 💞</p>' + aviso;
+      '<p class="big">📨</p><h2>¡Listo!</h2>' +
+      '<p class="sub">Ya le avisamos a Cony, ' + esc(quien) + '.</p>' + aviso;
   }
 
-  /* Guardar la respuesta para que Cony la vea en su panel */
-  var falla = "No pude registrar tu respuesta 🥲 avisale a Cony por otro medio.";
-  if (!db){ $("#sv").textContent = falla; return; }
-  db.collection("rsvps").doc(slug(quien))
-    .set({ name: quien, answer: respuesta, msg: mensaje, at: Date.now() })
-    .catch(function(){ $("#sv").textContent = falla; });
+  /* Mandar la respuesta a tu hoja de Google (fila de tipo RSVP) */
+  enviarAGoogle({ tipo: "RSVP", nombre: quien, respuesta: respuesta === "yes" ? "Va" : "No va", motivo: motivo || "" })
+    .catch(function(){ $("#sv").textContent = "No pude registrar tu respuesta 🥲 avisale a Cony por otro medio."; });
 }

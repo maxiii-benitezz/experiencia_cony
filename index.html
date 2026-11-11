@@ -4,41 +4,50 @@
   <meta charset="utf-8">
   <!-- Hace que se vea bien en celular -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Experiencia CONY 👑</title>
+  <title>Experiencia CONY</title>
+  <!-- Ícono de la pestaña: la corona, en imagen -->
+  <link rel="icon" type="image/png" href="img/emoji/1f451.png">
 
-  <!-- Tipografías de Google: Fredoka (textos) y Pacifico (títulos cursivos) -->
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+  <!-- Tipografías gamer de Google: "Press Start 2P" (títulos y botones) y "Pixelify Sans" (textos) -->
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <!-- Todo el diseño está en este archivo -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+<!-- -----------------------------------------------------------------
+     CÓMO LEER ESTE ARCHIVO
+     HTML es el "esqueleto": define QUÉ hay en la página (textos, botones, imágenes).
+     El diseño está en css/styles.css y el comportamiento en js/.
+
+     - Cada pantalla es un <section class="screen" id="..."> (s0 portada, s1 perfiles,
+       sm menú, s2 evento, sd dress code, s3 regalos, s4 trivia, s5 confirmar).
+     - [EDITABLE] Los textos de Evento, Dress Code y Regalos están directamente acá:
+       cambiá lo que está entre las etiquetas (ej: <div>Sábado 21</div>).
+     - [EDITABLE] Las canciones son las 3 etiquetas <audio> del final.
+     - [NO TOCAR] los id="..." (el código los usa para encontrar cada cosa) ni el orden
+       de los <script> del final.
+     ----------------------------------------------------------------- -->
 
 <div class="wrap">
 
-  <!-- ============ MENÚ DE SECCIONES (arriba) ============
-       Se arma desde js/navegacion.js: solo se pueden tocar las secciones
-       que ya visitaste. Las que todavía no desbloqueaste aparecen con 🔒. -->
-  <nav id="nav" hidden aria-label="Secciones">
-    <button data-nav="s1">🏠 Inicio</button>
-    <button data-nav="s2">🗓️ Evento</button>
-    <button data-nav="s3">💌 Regalos</button>
-    <button data-nav="s4">🪄 Trivia</button>
-    <button data-nav="s5">🥂 Confirmar</button>
-  </nav>
-
-  <!-- ============ PANTALLA 0: PORTADA ============ -->
+  <!-- ============ PANTALLA 0: PORTADA (pantalla completa) ============ -->
   <!-- La clase "on" indica cuál pantalla se está viendo -->
-  <!-- El botón "Comenzar" es el que arranca la música: los navegadores (Chrome, Safari)
-       no dejan sonar nada hasta que la persona toca algo, así que este toque es el "play" -->
+  <!-- La portada es la imagen img/portada.jpg (título + cartel). El botón "INGRESA" es un botón
+       de verdad ubicado encima del cartel. Al tocarlo arranca la música: Chrome y Safari no dejan
+       sonar nada hasta que la persona toca algo, así que este toque es el "play". -->
   <section class="screen on" id="s0">
-    <div class="win">
-      <div class="bar"><span>💌 invitación</span><span>✨ 💫</span></div>
-      <div class="body">
-        <h1>Experiencia CONY: Una noche para celebrar a mi manera 👑💓✨</h1>
-        <p class="sub">Tu invitación llegó 🥳💌</p>
-        <p class="big">💌</p>
-        <button class="btn" id="comenzar">Comenzar 🌟</button>
+    <div class="portada">
+      <h1 class="solo-lector">Experiencia CONY: Una noche para celebrar a mi manera</h1>
+      <!-- poster-wrap = caja que tiene el tamaño de la imagen; adentro: la imagen con el botón
+           (con los bordes difuminados) y el cartelito de aviso (sin difuminar) -->
+      <div class="poster-wrap">
+        <div class="poster">
+          <img src="img/portada.jpg" alt="Experiencia CONY" width="1280" height="704">
+          <button class="ingresa" id="comenzar">INGRESA</button>
+        </div>
+        <!-- [EDITABLE] Cartelito chico debajo del cartel INGRESA -->
+        <div class="aviso">Tu invitación llegó 🥳💌</div>
       </div>
     </div>
   </section>
@@ -46,7 +55,7 @@
   <!-- ============ PANTALLA 1: ELEGIR PERFIL ============ -->
   <section class="screen" id="s1">
     <div class="win">
-      <div class="bar"><span>👑 Inicia sesión con tu perfil</span><span>✨ 💫</span></div>
+      <div class="bar"><span>👑 choose_your_character.com</span><span>✨ 💫</span></div>
       <div class="body">
         <h2>Elegí tu personaje 👑</h2>
         <p class="sub">Clickeá tu perfil para comenzar 🌟</p>
@@ -56,35 +65,36 @@
     </div>
   </section>
 
-  <!-- ============ PANTALLA 2: DETALLES DEL EVENTO ============ -->
+  <!-- ============ MENÚ PRINCIPAL ============
+       Después de elegir perfil se llega acá. Se puede entrar a cualquier sección
+       en el orden que quieran (las que ya vieron quedan con ✔). -->
+  <section class="screen" id="sm">
+    <div class="win">
+      <div class="bar"><span>🎮 menu.com</span><span>💖</span></div>
+      <div class="body">
+        <h2>¡Hola, <span class="who"></span>! 💕</h2>
+        <p class="sub">Elegí una sección 🌟</p>
+        <!-- Los botones del menú se crean solos desde js/config.js (lista SECCIONES) -->
+        <div id="menuLista"></div>
+        <button class="btn alt" data-go="s1">← Cambiar de perfil</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECCIÓN 1: EVENTO ============ -->
   <section class="screen" id="s2">
     <div class="win">
-      <div class="bar"><span>🗓️ save the date</span><span>💞</span></div>
+      <div class="bar"><span>🗓️ save_the_date</span><span>💞</span></div>
       <div class="body">
-        <!-- Los elementos con clase "who" se completan con el nombre del perfil elegido -->
-        <h2>¡Hola, <span class="who"></span>! 💕</h2>
-
         <!-- Fecha, hora y lugar: editá los textos acá -->
         <div class="card">
           <h3>Save the Date 🗓️✨</h3>
           <div class="date">
             <div>Sábado 21 🥂</div>
             <div>22:00 a 4:00 am 🎉</div>
-            <div>Río Nihuil 813 📍</div>
+            <div>Río Nihuil 460 📍</div>
           </div>
         </div>
-
-        <h2>Dress Code 💋</h2>
-        <!-- <details> = tarjeta desplegable (se abre al tocar el título) -->
-        <details>
-          <summary>Opción 1: CONY 👑</summary>
-          <p>Vení con algo que te haga pensar en mí. Puede ser una referencia interna, un recuerdo, algún regalo, una asociación o detalle mío. No hace falta un disfraz. Es tu momento de desempolvar pulseras y memorias. 💞</p>
-        </details>
-        <details>
-          <summary>Opción 2: Brillos y colores 💫🌟</summary>
-          <p>Todo aquello que tenga un poco de exceso. Sugerencias: maquillaje con glitter, tacos, muchos accesorios. Más es más. 💋</p>
-        </details>
-        <div class="rule">🚫 Regla: evitar el total black o looks en blanco y negro.</div>
 
         <div class="card">
           <h3>A tener en cuenta 🧸</h3>
@@ -92,28 +102,53 @@
           <p>🪄 Consejo: no querés terminar como yo en el UDE (aunque no haya escaleras, no tomes el riesgo).</p>
         </div>
 
-        <!-- data-go="s3" = al tocar, va a la pantalla s3 -->
-        <button class="btn" data-go="s3">Siguiente 🌟</button>
+        <!-- data-volver="s2" = marca esta sección como vista y vuelve al menú (desbloquea la siguiente) -->
+        <button class="btn" data-volver="s2">← Volver al menú</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ PANTALLA 3: REGALOS ============ -->
+  <!-- ============ SECCIÓN 2: DRESS CODE ============
+       Todo se ve de una, sin tener que tocar nada. -->
+  <section class="screen" id="sd">
+    <div class="win">
+      <div class="bar"><span>👗 dress_code</span><span>💋</span></div>
+      <div class="body">
+        <h2>Dress Code 💋</h2>
+
+        <div class="card">
+          <h3>Opción 1: CONY 👑</h3>
+          <p>Vení con algo que te haga pensar en mí. Puede ser una referencia interna, un recuerdo, algún regalo, una asociación o detalle mío. No hace falta un disfraz. Es tu momento de desempolvar pulseras y memorias. 💞</p>
+        </div>
+
+        <div class="card">
+          <h3>Opción 2: Brillos y colores 💫🌟</h3>
+          <p>Todo aquello que tenga un poco de exceso. Sugerencias: maquillaje con glitter, tacos, muchos accesorios. Más es más. 💋</p>
+        </div>
+
+        <div class="rule">🚫 Regla: evitar el total black o looks en blanco y negro.</div>
+
+        <button class="btn" data-volver="sd">← Volver al menú</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECCIÓN 3: REGALOS ============ -->
   <section class="screen" id="s3">
     <div class="win">
-      <div class="bar"><span>💌 regalos.exe</span><span>🧸</span></div>
+      <div class="bar"><span>💌 regalos.com</span><span>🧸</span></div>
       <div class="body">
         <h2>Si estás pensando en un regalo… 💋✨</h2>
         <div class="card">
           <p class="big">💌🧸</p>
           <p style="text-align:center;font-weight:600">Los mejores regalos son con el corazón (y la mente) 💕. Me gustan las cartas y todo aquello que te recuerde a mí. 💌🧸</p>
         </div>
-        <button class="btn" data-go="s4">Ir a la Trivia 🤩</button>
+        <button class="btn" data-volver="s3">← Volver al menú</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ PANTALLA 4: TRIVIA ============ -->
+  <!-- ============ SECCIÓN 4: TRIVIA ============ -->
   <section class="screen" id="s4">
     <div class="win">
       <div class="bar"><span>🪄 trivia_time</span><span id="qn">1/7</span></div>
@@ -125,7 +160,7 @@
     </div>
   </section>
 
-  <!-- ============ PANTALLA 5: CONFIRMAR ASISTENCIA ============ -->
+  <!-- ============ SECCIÓN 5: CONFIRMAR ASISTENCIA ============ -->
   <section class="screen" id="s5">
     <div class="win">
       <div class="bar"><span>💌 guarda_tu_lugar</span><span>🥂</span></div>
@@ -135,33 +170,25 @@
         <div id="form">
           <h2>Guardá tu lugar 💌✨</h2>
           <p class="sub">Confirmá tu asistencia, <span class="who"></span> 🥳</p>
-          <label for="msg">Mensajito para Cony 💌 (opcional)</label>
-          <textarea id="msg" rows="3"></textarea>
           <div class="choice">
             <button class="opt" id="yes">¡Voy! 🥳</button>
-            <button class="opt" id="no">No puedo 💔</button>
+            <button class="opt" id="no">No puedo</button>
           </div>
-          <!-- Cuadro del "¿estás seguro/a?" (js/rsvp.js) -->
+          <!-- Cuadro del juego "No puedo" (js/rsvp.js) -->
           <div id="ask" hidden>
             <h2 id="at"></h2>
             <p id="ap" class="sub"></p>
+            <!-- Cuadro para escribir el motivo: aparece en el último paso -->
+            <textarea id="why" rows="3" placeholder="Contale a Cony por qué no podés ir…" hidden></textarea>
+            <p class="note" id="whyErr"></p>
             <button class="btn" id="ay">Mejor sí voy 🥳</button>
             <button class="btn alt" id="an">No puedo</button>
           </div>
         </div>
 
-        <!-- Resultado: sobre + carta (si va) o despedida (si no va) -->
+        <!-- Resultado: sobre + carta (si va) o aviso (si no va) -->
         <div id="done" hidden></div>
       </div>
-    </div>
-  </section>
-
-  <!-- ============ PANTALLA 6: PANEL SECRETO DE CONY ============ -->
-  <!-- Solo se ve entrando con #lista al final del link -->
-  <section class="screen" id="s6">
-    <div class="win">
-      <div class="bar"><span>👑 panel_de_cony</span><span>📋</span></div>
-      <div class="body" id="admin"><p class="sub">Cargando… ✨</p></div>
     </div>
   </section>
 
@@ -169,8 +196,8 @@
 
 <!-- ============ REPRODUCTOR DE MÚSICA (barra fija abajo) ============ -->
 <div id="player">
-  <button id="pp" aria-label="Reproducir o pausar">▶</button>
-  <div id="np">🎵 Tocá ▶ para música</div>
+  <button id="pp" aria-label="Reproducir o pausar"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg></button>
+  <div id="np">🎵 Tocá el botón para música</div>
   <div class="eq"><i></i><i></i><i></i></div> <!-- barritas animadas -->
   <button id="nx" aria-label="Silenciar" style="width:36px;height:36px">🔊</button>
 </div>
@@ -182,13 +209,13 @@
 
 <!-- ============ JAVASCRIPT ============ -->
 <!-- IMPORTANTE: el orden importa, cada archivo usa cosas del anterior -->
-<script src="js/config.js"></script>       <!-- 1. Datos editables (nombres, preguntas, carta) -->
+<script src="js/config.js"></script>       <!-- 1. Datos editables (nombres, preguntas, carta, links de Google) -->
 <script src="js/utilidades.js"></script>   <!-- 2. Funciones auxiliares -->
-<script src="js/db.js"></script>           <!-- 3. Conexión para guardar datos compartidos -->
+<script src="js/google.js"></script>       <!-- 3. Enviar datos al Google Form y leer el ranking -->
 <script src="js/musica.js"></script>       <!-- 4. Reproductor -->
-<script src="js/navegacion.js"></script>   <!-- 5. Perfiles y cambio de pantallas -->
+<script src="js/navegacion.js"></script>   <!-- 5. Perfiles, menú y cambio de pantallas -->
 <script src="js/trivia.js"></script>       <!-- 6. Trivia y ranking -->
 <script src="js/rsvp.js"></script>         <!-- 7. Confirmación y carta -->
-<script src="js/panel.js"></script>        <!-- 8. Panel de Cony -->
+<script src="js/emoji.js"></script>        <!-- 8. Cambia todos los emojis por imágenes (SIEMPRE el último) -->
 </body>
 </html>
